@@ -5,6 +5,20 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<PackAsTool>true</PackAsTool>
+	<ToolCommandName>enumextgen</ToolCommandName>
+
+	<PackageId>EnumExtensions.Tool</PackageId>
+	<Version>1.0.0</Version>
+	<Authors>Régis Bougaud</Authors>
+	<Description>
+		Offline enum extension generator.
+		Generates switch-based extension classes without source generators.
+	</Description>
+
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<Deterministic>true</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>
