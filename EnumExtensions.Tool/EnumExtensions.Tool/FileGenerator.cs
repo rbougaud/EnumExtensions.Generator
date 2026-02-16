@@ -1,30 +1,27 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace EnumExtensions.Tool;
 
 internal static class FileGenerator
 {
-    internal static void Generate(INamedTypeSymbol enumSymbol)
+    public static void Generate(EnumDeclarationSyntax enumDecl, string filePath)
     {
-        var name = enumSymbol.Name;
-        var ns = enumSymbol.ContainingNamespace.ToDisplayString();
+        var enumName = enumDecl.Identifier.Text;
 
-        var members = enumSymbol.GetMembers()
-            .OfType<IFieldSymbol>()
-            .Where(f => f.ConstantValue is not null)
-            .Select(f => f.Name)
+        var namespaceName = enumDecl.Ancestors()
+            .OfType<NamespaceDeclarationSyntax>()
+            .FirstOrDefault()?.Name.ToString() ?? "Global";
+
+        var members = enumDecl.Members
+            .Select(m => m.Identifier.Text)
             .ToList();
 
-        var source = Template.Generate(name, ns, members);
+        var code = Template.Generate(enumName, namespaceName, members);
 
-        var enumFile = enumSymbol.Locations[0].SourceTree!.FilePath;
-        var folder = Path.GetDirectoryName(enumFile)!;
+        var dir = Path.GetDirectoryName(filePath)!;
+        var output = Path.Combine(dir, $"{enumName}.Extensions.g.cs");
 
-        var outputPath = Path.Combine(folder, $"{name}Extensions.g.cs");
-
-        File.WriteAllText(outputPath, source);
-
-        Console.WriteLine($"Generated {name}Extensions.g.cs");
+        File.WriteAllText(output, code);
     }
-
 }
