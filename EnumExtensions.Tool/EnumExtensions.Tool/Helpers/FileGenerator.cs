@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace EnumExtensions.Tool;
+namespace EnumExtensions.Tool.Helpers;
 
 internal static class FileGenerator
 {

@@ -1,4 +1,4 @@
-﻿using EnumExtensions.Tool;
+﻿using EnumExtensions.Tool.Helpers;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

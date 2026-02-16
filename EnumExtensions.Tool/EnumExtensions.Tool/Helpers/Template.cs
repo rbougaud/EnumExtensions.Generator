@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace EnumExtensions.Tool;
+namespace EnumExtensions.Tool.Helpers;
 
 internal static class Template
 {
