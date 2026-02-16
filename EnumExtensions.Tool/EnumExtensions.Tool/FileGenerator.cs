@@ -5,7 +5,7 @@ namespace EnumExtensions.Tool;
 
 internal static class FileGenerator
 {
-    public static void Generate(EnumDeclarationSyntax enumDecl, string filePath)
+    public static bool Generate(EnumDeclarationSyntax enumDecl, string filePath)
     {
         var enumName = enumDecl.Identifier.Text;
 
@@ -22,6 +22,16 @@ internal static class FileGenerator
         var dir = Path.GetDirectoryName(filePath)!;
         var output = Path.Combine(dir, $"{enumName}.Extensions.g.cs");
 
+        if (File.Exists(output))
+        {
+            var existing = File.ReadAllText(output);
+            if (existing == code)
+            {
+                return false;
+            }
+        }
+
         File.WriteAllText(output, code);
+        return true;
     }
 }
