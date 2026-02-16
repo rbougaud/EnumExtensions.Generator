@@ -16,6 +16,6 @@ Incremental generation
 
 CI friendly
 
-Supports nested enums
+Supports nested enums (next version)
 
-Attribute-driven generation
+Attribute-driven generation (next version)
