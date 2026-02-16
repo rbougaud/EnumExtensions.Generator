@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
 
 	<PackAsTool>true</PackAsTool>
-	<ToolCommandName>enumextgen</ToolCommandName>
+	<ToolCommandName>enumextensions</ToolCommandName>
 
 	<PackageId>EnumExtensions.Tool</PackageId>
 	<Version>1.0.0</Version>
