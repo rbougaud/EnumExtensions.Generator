@@ -5,7 +5,7 @@ namespace EnumExtensions.Tool.Helpers;
 
 internal static class FileGenerator
 {
-    public static bool Generate(EnumDeclarationSyntax enumDecl, string filePath)
+    public static bool Generate(EnumDeclarationSyntax enumDecl, string sourceFilePath)
     {
         var enumName = enumDecl.Identifier.Text;
 
@@ -19,8 +19,9 @@ internal static class FileGenerator
 
         var code = Template.Generate(enumName, namespaceName, members);
 
-        var dir = Path.GetDirectoryName(filePath)!;
-        var output = Path.Combine(dir, $"{enumName}.Extensions.g.cs");
+        var projectRoot = Path.GetDirectoryName(sourceFilePath)!;
+        var extensionsDir = Path.Combine(projectRoot, "Extensions");
+        var output = Path.Combine(extensionsDir, $"{enumName}.Extensions.g.cs");
 
         if (File.Exists(output))
         {
