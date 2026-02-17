@@ -10,7 +10,7 @@
 	<ToolCommandName>enumextensions</ToolCommandName>
 
 	<PackageId>EnumExtensions.Tool</PackageId>
-	<Version>1.0.2</Version>
+	<Version>1.0.3</Version>
 	<Authors>Régis Bougaud</Authors>
 	<Description>
 		Offline enum extension generator.
