@@ -12,5 +12,6 @@ Features :
 - Attribute-driven generation (next version)
 
 ************ Commands **********
-dotnet tool install EnumExtensions.Tool --version 1.0.0
-Command to execute the tool : dotnet tool run enumextensions
+
+- dotnet tool install EnumExtensions.Tool --version 1.0.0
+- Command to execute the tool : dotnet tool run enumextensions
