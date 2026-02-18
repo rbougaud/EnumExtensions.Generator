@@ -30,9 +30,8 @@ public sealed class GenerateEnumExtensionsAttribute : Attribute
         {
             foreach (var attr in attrList.Attributes)
             {
-                var name = attr.Name.ToString();
-
-                if (name is "GenerateEnumExtensions" or "GenerateEnumExtensionsAttribute")
+                if (attr.Name is IdentifierNameSyntax ins &&
+                     (ins.Identifier.Text is "GenerateEnumExtensions" or "GenerateEnumExtensionsAttribute"))
                     return true;
             }
         }
