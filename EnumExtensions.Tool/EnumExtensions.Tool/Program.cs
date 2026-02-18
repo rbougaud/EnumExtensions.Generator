@@ -22,7 +22,7 @@ foreach (var file in files)
 
     var enums = rootNode.DescendantNodesAndSelf()
         .OfType<EnumDeclarationSyntax>()
-        .Where(AttributeExtensions.HasGenerateAttribute); ;
+        .Where(AttributeExtensions.HasGenerateAttribute);
 
     foreach (var enumDecl in enums)
     {
