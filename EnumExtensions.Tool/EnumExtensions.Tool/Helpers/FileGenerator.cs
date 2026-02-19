@@ -9,9 +9,7 @@ internal static class FileGenerator
     {
         var enumName = enumDecl.Identifier.Text;
 
-        var namespaceName = enumDecl.Ancestors()
-            .OfType<NamespaceDeclarationSyntax>()
-            .FirstOrDefault()?.Name.ToString() ?? "Global";
+        var namespaceName = GetNamespace(enumDecl);
 
         var members = enumDecl.Members
             .Select(m => m.Identifier.Text)
@@ -20,8 +18,11 @@ internal static class FileGenerator
         var code = Template.Generate(enumName, namespaceName, members);
 
         var projectRoot = Path.GetDirectoryName(sourceFilePath)!;
-        var extensionsDir = Path.Combine(projectRoot, "Extensions");
-        var output = Path.Combine(extensionsDir, $"{enumName}.Extensions.g.cs");
+        var generatedDir = Path.Combine(projectRoot, "Generated", "Enums");
+
+        Directory.CreateDirectory(generatedDir);
+
+        var output = Path.Combine(generatedDir, $"{enumName}.Extensions.g.cs");
 
         if (File.Exists(output))
         {
@@ -34,5 +35,26 @@ internal static class FileGenerator
 
         File.WriteAllText(output, code);
         return true;
+    }
+
+    private static string GetNamespace(SyntaxNode node)
+    {
+        var namespaces = node.Ancestors()
+            .Where(a => a is NamespaceDeclarationSyntax
+                     || a is FileScopedNamespaceDeclarationSyntax)
+            .Select(a =>
+                a switch
+                {
+                    NamespaceDeclarationSyntax nd => nd.Name.ToString(),
+                    FileScopedNamespaceDeclarationSyntax fs => fs.Name.ToString(),
+                    _ => null
+                })
+            .Where(n => n is not null)
+            .Reverse()
+            .ToList();
+
+        return namespaces.Count > 0
+            ? string.Join('.', namespaces)
+            : "Global";
     }
 }
