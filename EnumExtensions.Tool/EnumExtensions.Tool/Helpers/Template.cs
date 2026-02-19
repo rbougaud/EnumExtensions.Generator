@@ -6,6 +6,7 @@ internal static class Template
 {
     internal static string Generate(
         string enumName,
+        string extensionClassName,
         string namespaceName,
         List<string> members)
     {
@@ -27,7 +28,7 @@ internal static class Template
 
 namespace {namespaceName};
 
-    public static class {enumName}Extensions
+    public static class {extensionClassName}
     {{
         public static string ToStr(this {enumName} value)
             => value switch

@@ -15,7 +15,19 @@ internal static class FileGenerator
             .Select(m => m.Identifier.Text)
             .ToList();
 
-        var code = Template.Generate(enumName, namespaceName, members);
+        var containerNames = enumDecl.Ancestors()
+            .OfType<TypeDeclarationSyntax>()
+            .Select(t => t.Identifier.Text)
+            .Reverse()
+            .ToList();
+
+        string fullContainerPrefix = containerNames.Count > 0
+            ? string.Join('_', containerNames) + "_"
+            : string.Empty;
+
+        var extensionClassName = $"{fullContainerPrefix}{enumName}Extensions";
+
+        var code = Template.Generate(enumName, extensionClassName, namespaceName, members);
 
         var projectRoot = Path.GetDirectoryName(sourceFilePath)!;
         var generatedDir = Path.Combine(projectRoot, "Generated", "Enums");
@@ -25,7 +37,7 @@ internal static class FileGenerator
             Directory.CreateDirectory(generatedDir);
         }
 
-        var output = Path.Combine(generatedDir, $"{enumName}.Extensions.g.cs");
+        var output = Path.Combine(generatedDir, $"{extensionClassName}.g.cs");
 
         if (File.Exists(output))
         {
