@@ -9,7 +9,7 @@ internal static class FileGenerator
     {
         var enumName = enumDecl.Identifier.Text;
 
-        var namespaceName = enumDecl.AncestorsAndSelf()
+        var namespaceName = enumDecl.Ancestors()
             .OfType<NamespaceDeclarationSyntax>()
             .FirstOrDefault()?.Name.ToString() ?? "Global";
 

@@ -20,7 +20,7 @@ foreach (var file in files)
     var tree = CSharpSyntaxTree.ParseText(code);
     var rootNode = await tree.GetRootAsync();
 
-    var enums = rootNode.DescendantNodesAndSelf()
+    var enums = rootNode.DescendantNodes()
         .OfType<EnumDeclarationSyntax>()
         .Where(AttributeExtensions.HasGenerateAttribute);
 
