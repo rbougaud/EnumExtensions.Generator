@@ -32,10 +32,7 @@ internal static class FileGenerator
         var projectRoot = Path.GetDirectoryName(sourceFilePath)!;
         var generatedDir = Path.Combine(projectRoot, "Generated", "Enums");
 
-        if (!File.Exists(generatedDir))
-        {
-            Directory.CreateDirectory(generatedDir);
-        }
+        Directory.CreateDirectory(generatedDir);
 
         var output = Path.Combine(generatedDir, $"{extensionClassName}.g.cs");
 

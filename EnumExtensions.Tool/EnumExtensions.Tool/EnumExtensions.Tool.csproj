@@ -10,7 +10,7 @@
 	<ToolCommandName>enumextensions</ToolCommandName>
 
 	<PackageId>EnumExtensions.Tool</PackageId>
-	<Version>1.0.5</Version>
+	<Version>1.0.6</Version>
 	<Authors>Régis Bougaud</Authors>
 	<Description>
 		Offline enum extension generator.
@@ -23,6 +23,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EnumExtensions.Tool.Tests" />
   </ItemGroup>
 
 	<ItemGroup>
