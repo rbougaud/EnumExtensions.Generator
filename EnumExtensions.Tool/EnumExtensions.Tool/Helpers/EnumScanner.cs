@@ -11,13 +11,14 @@ internal static class EnumScanner
     /// </summary>
     public static async Task<bool> RunAsync(string root)
     {
-        AttributeExtensions.EnsureAttributeExists(root);
+        root = Path.GetFullPath(root);
 
         var files = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
             .Where(f => !f.EndsWith(".g.cs"))
             .ToList();
 
         bool modified = false;
+        var attributeDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var file in files)
         {
@@ -27,7 +28,15 @@ internal static class EnumScanner
 
             var enums = rootNode.DescendantNodes()
                 .OfType<EnumDeclarationSyntax>()
-                .Where(AttributeExtensions.HasGenerateAttribute);
+                .Where(AttributeExtensions.HasGenerateAttribute)
+                .ToList();
+
+            if (enums.Count == 0)
+            {
+                continue;
+            }
+
+            attributeDirs.Add(FindProjectDirectory(Path.GetDirectoryName(file)!, root));
 
             foreach (var enumDecl in enums)
             {
@@ -38,6 +47,41 @@ internal static class EnumScanner
             }
         }
 
+        foreach (var dir in attributeDirs)
+        {
+            AttributeExtensions.EnsureAttributeExists(dir);
+        }
+
         return modified;
+    }
+
+    /// <summary>
+    /// Remonte depuis le dossier du fichier source jusqu'au premier dossier
+    /// contenant un .csproj (sans dépasser <paramref name="root"/>).
+    /// À défaut, retourne <paramref name="root"/>.
+    /// </summary>
+    private static string FindProjectDirectory(string startDirectory, string root)
+    {
+        var dir = new DirectoryInfo(startDirectory);
+
+        while (dir is not null)
+        {
+            if (dir.EnumerateFiles("*.csproj").Any())
+            {
+                return dir.FullName;
+            }
+
+            if (string.Equals(
+                    Path.TrimEndingDirectorySeparator(dir.FullName),
+                    Path.TrimEndingDirectorySeparator(root),
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                break;
+            }
+
+            dir = dir.Parent!;
+        }
+
+        return root;
     }
 }

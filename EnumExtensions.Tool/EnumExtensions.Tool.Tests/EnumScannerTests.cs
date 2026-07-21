@@ -193,6 +193,104 @@ public sealed class EnumScannerTests : IDisposable
     }
 
     [Fact]
+    public async Task RunAsync_PlacesAttributeFile_NextToCsproj()
+    {
+        var projDir = Path.Combine(_root, "MyProj");
+        Directory.CreateDirectory(Path.Combine(projDir, "Model"));
+        File.WriteAllText(Path.Combine(projDir, "MyProj.csproj"), "<Project />");
+        File.WriteAllText(Path.Combine(projDir, "Model", "Color.cs"), """
+            namespace Demo;
+
+            [GenerateEnumExtensions]
+            public enum Color { Red }
+            """);
+
+        await EnumScanner.RunAsync(_root);
+
+        Assert.True(File.Exists(Path.Combine(projDir, "GenerateEnumExtensionsAttribute.g.cs")));
+        Assert.False(File.Exists(Path.Combine(_root, "GenerateEnumExtensionsAttribute.g.cs")));
+    }
+
+    [Fact]
+    public async Task RunAsync_PlacesAttributeFile_InEachProjectWithAttributedEnums()
+    {
+        foreach (var name in new[] { "ProjA", "ProjB" })
+        {
+            var dir = Path.Combine(_root, name);
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, $"{name}.csproj"), "<Project />");
+            File.WriteAllText(Path.Combine(dir, "Color.cs"), $$"""
+                namespace {{name}};
+
+                [GenerateEnumExtensions]
+                public enum Color { Red }
+                """);
+        }
+
+        await EnumScanner.RunAsync(_root);
+
+        Assert.True(File.Exists(Path.Combine(_root, "ProjA", "GenerateEnumExtensionsAttribute.g.cs")));
+        Assert.True(File.Exists(Path.Combine(_root, "ProjB", "GenerateEnumExtensionsAttribute.g.cs")));
+    }
+
+    [Fact]
+    public async Task RunAsync_DoesNotPlaceAttributeFile_InProjectWithoutAttributedEnums()
+    {
+        var projA = Path.Combine(_root, "ProjA");
+        var projB = Path.Combine(_root, "ProjB");
+        Directory.CreateDirectory(projA);
+        Directory.CreateDirectory(projB);
+        File.WriteAllText(Path.Combine(projA, "ProjA.csproj"), "<Project />");
+        File.WriteAllText(Path.Combine(projB, "ProjB.csproj"), "<Project />");
+        File.WriteAllText(Path.Combine(projA, "Color.cs"), """
+            namespace Demo;
+
+            [GenerateEnumExtensions]
+            public enum Color { Red }
+            """);
+        File.WriteAllText(Path.Combine(projB, "Status.cs"), """
+            namespace Demo;
+
+            public enum Status { On }
+            """);
+
+        await EnumScanner.RunAsync(_root);
+
+        Assert.True(File.Exists(Path.Combine(projA, "GenerateEnumExtensionsAttribute.g.cs")));
+        Assert.False(File.Exists(Path.Combine(projB, "GenerateEnumExtensionsAttribute.g.cs")));
+    }
+
+    [Fact]
+    public async Task RunAsync_DoesNotCreateAttributeFile_WhenNoAttributedEnums()
+    {
+        AddSource("Status.cs", """
+            namespace Demo;
+
+            public enum Status { On, Off }
+            """);
+
+        await EnumScanner.RunAsync(_root);
+
+        Assert.False(File.Exists(Path.Combine(_root, "GenerateEnumExtensionsAttribute.g.cs")));
+    }
+
+    [Fact]
+    public async Task RunAsync_GeneratedAttributeDefinition_IsInternal()
+    {
+        AddSource("Color.cs", """
+            namespace Demo;
+
+            [GenerateEnumExtensions]
+            public enum Color { Red }
+            """);
+
+        await EnumScanner.RunAsync(_root);
+
+        var content = File.ReadAllText(Path.Combine(_root, "GenerateEnumExtensionsAttribute.g.cs"));
+        Assert.Contains("internal sealed class GenerateEnumExtensionsAttribute", content);
+    }
+
+    [Fact]
     public async Task RunAsync_IgnoresGeneratedFiles_WhenScanning()
     {
         AddSource("Color.cs", """
